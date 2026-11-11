@@ -1,11 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity} from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
 import { TodoStatusEnum } from '../enums/todo-status.enum';
 
 @Entity('todo')
 export class TodoEntity extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
 
   @Column()
   name: string;
@@ -19,4 +17,8 @@ export class TodoEntity extends BaseEntity {
     default: TodoStatusEnum.waiting,
   })
   status: TodoStatusEnum;
+
+  // Ajout de la colonne userId pour stocker l'ID de l'utilisateur qui a créé le todo
+  @Column()
+  userId: number;
 }

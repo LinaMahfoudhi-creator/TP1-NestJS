@@ -11,4 +11,8 @@ export const ERROR_MESSAGES = {
   "Le statut doit être l'une des valeurs : En cours, En attente, Finalisé.",
 
   TODO_NOT_FOUND: (id: number) => `Le todo ${id} n'existe pas.`,
+  UNAUTHORIZED: "Vous ne pouvez pas accéder à cette ressource : token manquant ou invalide.",
+  FORBIDDEN: "Seul l'utilisateur qui a créé ce todo peut le modifier ou le supprimer.",
+
+  ELEMENT_NOT_FOUND: (id: number) => `L'élément ${id} n'existe pas.`,
 };

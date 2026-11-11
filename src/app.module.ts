@@ -5,6 +5,9 @@ import { AppService } from './app.service';
 import { CommonModule } from './common/common.module';
 import { TodoModule } from './todo/todo.module';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
+import { SkillModule } from './skill/skill.module';
+import { CvModule } from './cv/cv.module';
 
 @Module({
   imports: [
@@ -21,6 +24,9 @@ import { ConfigModule } from '@nestjs/config';
   }),
   CommonModule,
   TodoModule,
+  UserModule,
+  SkillModule,
+  CvModule,
 ],
   controllers: [AppController],
   providers: [AppService],

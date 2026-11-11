@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TodoEntity } from './entities/todo.entity';
@@ -15,52 +15,55 @@ export class TodoService {
     private readonly todoRepository: Repository<TodoEntity>,
   ) {}
 
-  async addTodo(dto: AddTodoDto): Promise<TodoEntity> {
-    const todo = this.todoRepository.create(dto);
+  async addTodo(dto: AddTodoDto, userId: number): Promise<TodoEntity> {
+    const todo = this.todoRepository.create({ ...dto, userId }); //on crée le todo avec son userId
     return await this.todoRepository.save(todo);
   }
 
-  async updateTodo(id: number, dto: UpdateTodoDto): Promise<TodoEntity> {
-  const todo = await this.todoRepository.preload({ id, ...dto });
-  if (!todo) {
-    throw new NotFoundException(ERROR_MESSAGES.TODO_NOT_FOUND(id));
-  }
-  return await this.todoRepository.save(todo);
-  }
-
-  async hardDeleteTodo(id: number): Promise<void> {
+  private async findOwnedTodo(
+  id: number,
+  userId: number,
+  withDeleted = false,
+): Promise<TodoEntity> {
   const todo = await this.todoRepository.findOne({
     where: { id },
-    withDeleted: true,
+    withDeleted,
   });
 
   if (!todo) {
     throw new NotFoundException(ERROR_MESSAGES.TODO_NOT_FOUND(id));
   }
 
+  if (todo.userId !== userId) {
+    throw new ForbiddenException(ERROR_MESSAGES.FORBIDDEN);
+  }
+
+  return todo;
+}
+
+  async updateTodo(id: number, dto: UpdateTodoDto, userId: number) {
+  const todo = await this.findOwnedTodo(id, userId);
+  Object.assign(todo, dto);
+  return await this.todoRepository.save(todo);
+}
+
+  async hardDeleteTodo(id: number, userId: number): Promise<void> {
+  const todo = await this.findOwnedTodo(id, userId, true);
   await this.todoRepository.remove(todo);
 }
 
-  async softDeleteTodo(id: number): Promise<void> {
-  const todo = await this.todoRepository.findOne({
-    where: { id },
-  });
-
-  if (!todo) {
-    throw new NotFoundException(ERROR_MESSAGES.TODO_NOT_FOUND(id));
-  }
-
+async softDeleteTodo(id: number, userId: number): Promise<void> {
+  await this.findOwnedTodo(id, userId);
   await this.todoRepository.softDelete(id);
 }
 
-  async restoreTodo(id: number): Promise<TodoEntity> {
-    const todo = await this.todoRepository.findOne({ where: { id }, withDeleted: true });
-    if (!todo) {
-      throw new NotFoundException(ERROR_MESSAGES.TODO_NOT_FOUND(id));
-    }
-    todo.deletedAt = null;
-    return await this.todoRepository.save(todo);
-  } 
+  async restoreTodo(id: number, userId: number): Promise<TodoEntity> {
+  const todo = await this.findOwnedTodo(id, userId, true);
+
+  todo.deletedAt = null;
+
+  return await this.todoRepository.save(todo);
+}
 
   async countByStatus() {
   const result = await this.todoRepository
