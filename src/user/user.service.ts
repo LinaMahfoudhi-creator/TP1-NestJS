@@ -9,4 +9,13 @@ export class UserService extends CrudService<User> {
   constructor(@InjectRepository(User) repo: Repository<User>) {
     super(repo);
   }
+
+  // user.service.ts
+findByUsername(username: string) {
+  return this.repository.findOne({ where: { username } });
+}
+
+findByUsernameOrEmail(username: string, email: string) {
+  return this.repository.findOne({ where: [{ username }, { email }] });
+}
 }

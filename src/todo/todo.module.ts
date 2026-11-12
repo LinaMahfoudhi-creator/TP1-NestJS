@@ -14,6 +14,6 @@ import { AuthMiddleware } from '../common/middlewares/auth.middleware';
 })
 export class TodoModule{ //appliquer le middleware AuthMiddleware à toutes les routes du TodoController
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes(TodoController);
+    // consumer.apply(AuthMiddleware).forRoutes(TodoController);
   }
 }

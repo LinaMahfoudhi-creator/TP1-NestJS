@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { SkillModule } from './skill/skill.module';
 import { CvModule } from './cv/cv.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CvModule } from './cv/cv.module';
   UserModule,
   SkillModule,
   CvModule,
+  AuthModule,
 ],
   controllers: [AppController],
   providers: [AppService],

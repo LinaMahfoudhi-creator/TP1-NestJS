@@ -8,6 +8,5 @@ export class CreateCvDto {
   @IsInt() cin: number;
   @IsString() job: string;
   @IsOptional() @IsString() path?: string;
-  @IsOptional() @IsInt() userId?: number;
   @IsOptional() @IsArray() skillIds?: number[];
 }

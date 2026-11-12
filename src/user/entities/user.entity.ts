@@ -8,6 +8,9 @@ export class User extends BaseEntity {
   @Column({ unique: true }) email: string;
   @Column() password: string;
 
+  @Column({ default: 'user' })
+  role: string;
+
   @OneToMany(() => Cv, (cv) => cv.user) //one user can have many cvs
   cvs: Cv[];
 }
